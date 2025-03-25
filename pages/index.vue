@@ -12,8 +12,9 @@
 
 <script setup lang="ts">
 import ProductItem from '~/components/products/ProductItem.vue';
+import type { Products } from '~/types';
 
-const products = [
+const products: Products = [
   {
     id: 1,
     title: 'Title 1',

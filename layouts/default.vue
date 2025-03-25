@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full fixed z-50 h-full bg-[#FAFAFA]">
+  <div class="w-full min-h-screen z-50 h-full bg-[#FAFAFA]">
     <AppNavbar />
     <AppHeader />
     <Loading v-if="userStore.isLoading" />
-    <div class="lg:pt-[150px] md:pt-[130px] pt-[80px]">
+    <div class="pt-8">
       <slot />
     </div>
     <AppFooter v-if="!userStore.isLoading" />
