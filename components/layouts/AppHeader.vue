@@ -67,20 +67,20 @@
         </button>
       </NuxtLink>
       <button
-        @click="useStore.isMenuOverlay = true"
+        @click="userStore.isMenuOverlay = true"
         class="md:hidden block rounded-full p-1.5 -mt-[4px] hover:bg-gray-200"
       >
         <Icon name="radix-icons:hamburger-menu" size="33" />
       </button>
     </div>
   </div>
-  <Loading v-if="false" />
-  <div class="lg:pt-[150px] md:pt-[130px] pt-[80px]">
-    <slot />
-  </div>
 </template>
 
 <script setup lang="ts">
+import { useUserStore } from '~/stores/user';
+
+const userStore = useUserStore();
+
 let searchItem = ref('');
 let isCartHover = ref(false);
 let isSearching = ref(false);
