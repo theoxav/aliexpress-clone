@@ -1,27 +1,26 @@
 <template>
-  <nav id="TopMenu" class="w-full bg-[#FAFAFA] border-b md:block hidden">
+  <nav id="TopMenu" class="w-full bg-[#FAFAFA] border-b">
     <ul
-      class="flex items-center justify-end text-xs text-[#333333] font-light px-2 h-10 bg-[#FAFAFA] max-w-[1200px]"
+      class="hidden md:flex items-center justify-end text-xs text-[#333333] font-light px-2 h-10 bg-[#FAFAFA] max-w-[1200px]"
     >
       <li
-        class="border-r border-r-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
+        class="border-r border-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
       >
         Sell on AliExpress
       </li>
       <li
-        class="border-r border-r-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
+        class="border-r border-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
       >
         Cookie Preferences
       </li>
       <li
-        class="border-r border-r-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
+        class="border-r border-gray-400 px-3 hover:text-[#FF4646] cursor-pointer"
       >
         Help
       </li>
       <li class="px-3 hover:text-[#FF4646] cursor-pointer">Buyer Protection</li>
       <li class="px-3 hover:text-[#FF4646] cursor-pointer">
-        <Icon name="ic:sharp-install-mobile" size="17" />
-        App
+        <Icon name="ic:sharp-install-mobile" size="17" /> App
       </li>
       <li
         @mouseenter="isAccountMenu = true"
@@ -29,7 +28,7 @@
         class="relative flex items-center px-2.5 hover:text-[#FF4646] h-full cursor-pointer"
         :class="
           isAccountMenu
-            ? 'bg-white border z-40 shadow-[0_15px_100px_40px_rgba(0,0,0,0.3)]'
+            ? 'bg-white border z-40 shadow-lg'
             : 'border border-[#FAFAFA]'
         "
       >
@@ -49,8 +48,9 @@
               <NuxtLink
                 to="/auth"
                 class="bg-[#FF4646] text-center w-full text-[16px] rounded-sm text-white font-semibold p-2"
-                >Login / Register</NuxtLink
               >
+                Login / Register
+              </NuxtLink>
             </div>
           </div>
           <div class="border-b" />
@@ -75,5 +75,9 @@
 </template>
 
 <script setup lang="ts">
-let isAccountMenu = ref(false);
+import { ref } from 'vue';
+import { useUserStore } from '~/stores/user';
+
+const userStore = useUserStore();
+const isAccountMenu = ref(false);
 </script>

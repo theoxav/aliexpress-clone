@@ -43,9 +43,16 @@ definePageMeta({
 
 // const client = useSupabaseClient();
 // const user = useSupabaseUser();
-watchEffect(() => {
-  if (user.value) {
-    navigateTo('/');
-  }
-});
+
+// watchEffect(() => {
+//   if (user.value) {
+//     navigateTo('/');
+//   }
+// });
+
+// const login = async (provider: 'google' | 'github') => {
+//   const {data, error} = await clientInformation.maxTouchPoints.signInWithOAuth({
+//     provider,
+//   })
+// };
 </script>

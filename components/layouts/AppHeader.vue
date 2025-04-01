@@ -4,8 +4,9 @@
       class="flex lg:justify-start justify-between items-center gap-10 max-w-[1150px] w-full px-3 py-5 mx-auto"
     >
       <NuxtLink to="/" class="min-w-[170px]">
-        <img width="170" src="/AliExpress-logo.png" alt="" />
+        <img width="170" src="/AliExpress-logo.png" alt="AliExpress Logo" />
       </NuxtLink>
+
       <div class="max-w-[700px] w-full md:block hidden">
         <div class="relative">
           <div
@@ -27,25 +28,9 @@
               <Icon name="ph:magnifying-glass" size="20" color="#ffffff" />
             </button>
           </div>
-
-          <div class="absolute bg-white max-w-[700px] h-auto w-full">
-            <div v-if="false" class="p-1">
-              <NuxtLink to="`/item/1`" class="flex items-center">
-                <div class="flex items-center">
-                  <img
-                    class="rounded-md"
-                    width="40"
-                    src="https://picsum.photos/id/82/300/300"
-                    alt=""
-                  />
-                  <div class="truncate ml-2">TESTING</div>
-                </div>
-                <div class="truncate">$ 98.99</div>
-              </NuxtLink>
-            </div>
-          </div>
         </div>
       </div>
+
       <NuxtLink to="/shopping-cart" class="flex items-center">
         <button
           class="relative md:block hidden"
@@ -66,23 +51,53 @@
           </div>
         </button>
       </NuxtLink>
+
       <button
-        @click="userStore.isMenuOverlay = true"
+        @click="toggleMenu"
         class="md:hidden block rounded-full p-1.5 -mt-[4px] hover:bg-gray-200"
       >
-        <Icon name="radix-icons:hamburger-menu" size="33" />
+        <Icon
+          v-if="!userStore.isMenuOverlay"
+          name="radix-icons:hamburger-menu"
+          size="33"
+        />
+        <Icon v-else name="ph:x-bold" size="33" />
       </button>
     </div>
   </div>
+
+  <MenuOverlay
+    v-if="userStore.isMenuOverlay"
+    @close="toggleMenu"
+    class="fixed top-0 left-0 w-full h-full bg-white z-50"
+  />
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useUserStore } from '~/stores/user';
+import MenuOverlay from '~/components/ui/MenuOverlay.vue';
 
 const userStore = useUserStore();
-
 let searchItem = ref('');
 let isCartHover = ref(false);
 let isSearching = ref(false);
-console.log(isCartHover);
+
+const toggleMenu = () => {
+  userStore.isMenuOverlay = !userStore.isMenuOverlay;
+};
+
+const closeMenuOnResize = () => {
+  if (window.innerWidth >= 768) {
+    userStore.isMenuOverlay = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', closeMenuOnResize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', closeMenuOnResize);
+});
 </script>

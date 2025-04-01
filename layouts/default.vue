@@ -6,7 +6,7 @@
     <div class="pt-8">
       <slot />
     </div>
-    <AppFooter v-if="!userStore.isLoading" />
+    <AppFooter v-if="!userStore.isLoading && !userStore.isMenuOverlay" />
   </div>
 </template>
 
