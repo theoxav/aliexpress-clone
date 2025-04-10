@@ -1,5 +1,9 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  vite: {
+    optimizeDeps: {
+      include: ['cookie'],
+    },
+  },
   compatibilityDate: '2024-11-01',
   devtools: { enabled: true },
   pages: true,
@@ -9,10 +13,11 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'pinia-plugin-persistedstate',
     '@nuxtjs/tailwindcss',
-    // '@nuxtjs/supabase',
+    '@nuxtjs/supabase',
   ],
   runtimeConfig: {
     public: {
+      baseUrl: process.env.BASE_URL || 'http://localhost:3000',
       stripePk: process.env.STRIPE_PK,
     },
   },
@@ -24,6 +29,14 @@ export default defineNuxtConfig({
           defer: true,
         },
       ],
+    },
+  },
+
+  supabase: {
+    redirectOptions: {
+      login: '/auth/login',
+      callback: '/auth/confirm',
+      exclude: ['/'],
     },
   },
 });

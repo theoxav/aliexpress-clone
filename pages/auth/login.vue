@@ -12,7 +12,9 @@
       <div class="text-center my-6">Login / Register</div>
       <button
         class="flex items-center justify-center gap-3 p-1.5 w-full border hover:bg-gray-100 rounded-full text-lg font-semibold"
-        @click="login('google')"
+        @click="
+          auth.signInWithOAuth({ provider: 'google', options: { redirectTo } })
+        "
       >
         <img
           class="w-full max-w-[30px]"
@@ -23,7 +25,9 @@
       </button>
       <button
         class="flex items-center justify-center gap-3 p-1.5 w-full border hover:bg-gray-100 rounded-full text-lg font-semibold mt-4"
-        @click="login('github')"
+        @click="
+          auth.signInWithOAuth({ provider: 'github', options: { redirectTo } })
+        "
       >
         <img
           class="w-full max-w-[30px]"
@@ -37,22 +41,14 @@
 </template>
 
 <script setup lang="ts">
-definePageMeta({
-  layout: false,
+const user = useSupabaseUser();
+const { auth } = useSupabaseClient();
+
+const redirectTo = `${useRuntimeConfig().public.baseUrl}/auth/confirm`;
+
+watchEffect(() => {
+  if (user.value) {
+    navigateTo('/');
+  }
 });
-
-// const client = useSupabaseClient();
-// const user = useSupabaseUser();
-
-// watchEffect(() => {
-//   if (user.value) {
-//     navigateTo('/');
-//   }
-// });
-
-// const login = async (provider: 'google' | 'github') => {
-//   const {data, error} = await clientInformation.maxTouchPoints.signInWithOAuth({
-//     provider,
-//   })
-// };
 </script>
