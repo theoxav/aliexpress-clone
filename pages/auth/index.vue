@@ -8,6 +8,8 @@
       </NuxtLink>
     </div>
 
+    {{ user }}
+
     <div class="max-w-[400px] mx-auto px-2">
       <div class="text-center my-6">Login / Register</div>
       <button
@@ -41,18 +43,34 @@ definePageMeta({
   layout: false,
 });
 
-// const client = useSupabaseClient();
-// const user = useSupabaseUser();
+const client = useSupabaseClient();
+const user = useSupabaseUser();
+console.log('User:', user.value);
 
-// watchEffect(() => {
-//   if (user.value) {
-//     navigateTo('/');
-//   }
-// });
+watchEffect(() => {
+  if (user.value) {
+    navigateTo('/');
+  }
+});
 
-// const login = async (provider: 'google' | 'github') => {
-//   const {data, error} = await clientInformation.maxTouchPoints.signInWithOAuth({
-//     provider,
-//   })
-// };
+const login = async (prov: 'google' | 'github') => {
+  if (user.value) {
+    navigateTo('/');
+    return;
+  }
+  console.log('Attempting login with provider:', prov);
+
+  const { data, error } = await client.auth.signInWithOAuth({
+    provider: prov,
+    options: {
+      redirectTo: `${window.location.origin}`,
+    },
+  });
+
+  if (error) {
+    console.error('Login error:', error.message);
+  } else {
+    console.log('Login successful:', data);
+  }
+};
 </script>
