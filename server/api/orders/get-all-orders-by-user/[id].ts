@@ -5,7 +5,7 @@ export default defineEventHandler(async (event) => {
     const id = event.context.params?.id;
 
     if (!id || typeof id !== 'string') {
-      throw new Error('Invalid request: Missing or invalid search parameter.');
+      throw new Error('Invalid request: Missing or invalid user ID.');
     }
 
     const orders = await prisma.orders.findMany({
@@ -22,16 +22,14 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return {
-      success: true,
-      data: orders,
-    };
+    if (!orders || orders.length === 0) {
+      throw new Error('No orders found for the given user ID.');
+    }
+
+    return orders;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });

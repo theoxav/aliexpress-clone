@@ -5,25 +5,23 @@ export default defineEventHandler(async (event) => {
     const id = event.context.params?.id;
 
     if (!id || typeof id !== 'string') {
-      throw new Error('Invalid request: Missing or invalid search parameter.');
+      throw new Error('Invalid request: Missing or invalid user ID.');
     }
 
-    const res = await prisma.addresses.findFirst({
+    const address = await prisma.addresses.findFirst({
       where: {
         userId: id,
       },
     });
 
-    return {
-      success: true,
-      data: res,
-    };
+    if (!address) {
+      throw new Error('Address not found for the given user ID.');
+    }
+
+    return address;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });

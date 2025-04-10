@@ -18,6 +18,5 @@ import AppNavbar from '~/components/layouts/AppNavbar.vue';
 import Loading from '~/components/ui/Loading.vue';
 
 const userStore = useUserStore();
-console.log('isLoading:', userStore.isLoading);
 </script>
 <style></style>

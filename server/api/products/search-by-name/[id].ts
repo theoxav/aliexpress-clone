@@ -18,16 +18,14 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return {
-      success: true,
-      data: items,
-    };
+    if (!items || items.length === 0) {
+      throw new Error('No products found matching the search parameter.');
+    }
+
+    return items;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });

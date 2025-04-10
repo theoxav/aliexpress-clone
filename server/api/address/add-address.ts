@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
       throw new Error('Invalid request: Missing required fields.');
     }
 
-    const order = await prisma.addresses.create({
+    const address = await prisma.addresses.create({
       data: {
         userId: body.userId,
         name: body.name,
@@ -27,16 +27,10 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return {
-      success: true,
-      data: order,
-    };
+    return address;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });

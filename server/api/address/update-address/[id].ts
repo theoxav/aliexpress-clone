@@ -4,6 +4,7 @@ export default defineEventHandler(async (event) => {
   try {
     const body = await readBody(event);
 
+    // Vérification des paramètres requis
     if (!body || !event.context.params?.id) {
       throw new Error('Invalid request: Missing required parameters.');
     }
@@ -13,7 +14,7 @@ export default defineEventHandler(async (event) => {
       throw new Error('Invalid ID: ID must be a number.');
     }
 
-    const res = await prisma.addresses.update({
+    const updatedAddress = await prisma.addresses.update({
       where: { id },
       data: {
         name: body.name,
@@ -24,16 +25,10 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return {
-      success: true,
-      data: res,
-    };
+    return updatedAddress;
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });

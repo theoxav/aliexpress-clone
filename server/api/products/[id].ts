@@ -14,16 +14,16 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    return {
-      success: true,
-      data: product,
-    };
+    if (!product) {
+      throw new Error('Product not found.');
+    }
+
+    return product;
   } catch (error) {
+    console.error('Error fetching product:', error);
+
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    return {
-      success: false,
-      message: errorMessage,
-    };
+    throw createError({ statusCode: 400, message: errorMessage });
   }
 });
