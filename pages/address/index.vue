@@ -58,11 +58,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import TextInput from '~/components/ui/TextInput.vue';
 import { useUserStore } from '~/stores/user';
+import type { Address } from '~/types';
 
 const userStore = useUserStore();
+const user = useSupabaseUser();
 
 let contactName = ref<string>('');
 let address = ref<string>('');
@@ -70,13 +72,41 @@ let zipCode = ref<string>('');
 let city = ref<string>('');
 let country = ref<string>('');
 
-let currentAddress = ref(null);
+interface AddressResponse {
+  data: Address | null;
+}
+
+let currentAddress = ref<AddressResponse | null>(null);
 
 let isUpdate = ref(false);
 let isWorking = ref<boolean>(false);
 let error = ref<{ type: string; message: string } | null>(null);
 
-watchEffect(() => {
+watchEffect(async () => {
+  if (!user.value) return;
+
+  const { data, error: fetchError } = await useFetch<AddressResponse>(
+    `/api/address/get-address-by-user/${user.value.id}`
+  );
+
+  if (fetchError) {
+    console.error('Error fetching address:', fetchError);
+    return;
+  }
+
+  currentAddress.value = data.value || null;
+
+  if (currentAddress.value?.data) {
+    const addressData = currentAddress.value.data;
+    contactName.value = addressData.contactName;
+    address.value = addressData.address;
+    zipCode.value = addressData.zipCode;
+    city.value = addressData.city;
+    country.value = addressData.country;
+
+    isUpdate.value = true;
+  }
+
   userStore.isLoading = false;
 });
 
@@ -85,19 +115,57 @@ const submit = async () => {
   error.value = null;
 
   const fields = {
-    contactName: 'Contact name is required',
-    address: 'Address is required',
-    zipCode: 'Zip code is required',
-    city: 'City is required',
-    country: 'Country is required',
+    contactName,
+    address,
+    zipCode,
+    city,
+    country,
   };
 
-  for (const [field, message] of Object.entries(fields)) {
-    if (!eval(field).value) {
-      error.value = { type: field, message };
+  for (const [field, refValue] of Object.entries(fields)) {
+    if (!refValue.value) {
+      error.value = { type: field, message: `${field} is required` };
       isWorking.value = false;
       return;
     }
+  }
+
+  if (isUpdate.value && currentAddress.value?.data) {
+    await useFetch(
+      `/api/address/update-address/${currentAddress.value.data.id}`,
+      {
+        method: 'PATCH',
+        body: {
+          contactName: contactName.value,
+          address: address.value,
+          zipCode: zipCode.value,
+          city: city.value,
+          country: country.value,
+        },
+      }
+    );
+
+    isWorking.value = false;
+
+    return navigateTo('/checkout');
+  }
+
+  if (user.value) {
+    await useFetch('/api/address/add-address', {
+      method: 'POST',
+      body: {
+        userId: user.value.id,
+        contactName: contactName.value,
+        address: address.value,
+        zipCode: zipCode.value,
+        city: city.value,
+        country: country.value,
+      },
+    });
+
+    isWorking.value = false;
+
+    navigateTo('/checkout');
   }
 };
 </script>

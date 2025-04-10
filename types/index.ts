@@ -7,3 +7,12 @@ export type Product = {
 };
 
 export type Products = Product[];
+
+export type Address = {
+  id: string;
+  contactName: string;
+  address: string;
+  zipCode: string;
+  city: string;
+  country: string;
+};
