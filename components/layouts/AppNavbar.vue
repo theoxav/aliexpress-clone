@@ -44,7 +44,7 @@
             <div class="text-semibold text-[15px] my-4 px-3">
               Welcome to AliExpress!
             </div>
-            <div class="flex items-center gap-1 px-3 mb-3">
+            <div v-if="!user" class="flex items-center gap-1 px-3 mb-3">
               <NuxtLink
                 to="/auth/login"
                 class="bg-[#FF4646] text-center w-full text-[16px] rounded-sm text-white font-semibold p-2"
@@ -54,7 +54,7 @@
             </div>
           </div>
           <div class="border-b" />
-          <ul class="bg-white">
+          <ul v-if="user" class="bg-white">
             <li
               @click="navigateTo('/orders')"
               class="text-[13px] py-2 px-4 w-full hover:bg-gray-200"
@@ -62,8 +62,8 @@
               My Orders
             </li>
             <li
-              v-if="true"
               class="text-[13px] py-2 px-4 w-full hover:bg-gray-200"
+              @click="handleLogout"
             >
               Sign out
             </li>
@@ -75,9 +75,26 @@
 </template>
 
 <script setup lang="ts">
+import { toast } from 'vue-sonner';
 import { ref } from 'vue';
 import { useUserStore } from '~/stores/user';
 
 const userStore = useUserStore();
+const user = useSupabaseUser();
+const { auth } = useSupabaseClient();
 const isAccountMenu = ref(false);
+
+const handleLogout = async () => {
+  const { error } = await auth.signOut();
+  if (error) {
+    return alert('Something went wrong !');
+  }
+
+  toast('Déconnexion Réussie', {
+    style: {
+      background: '#4ade80',
+      color: 'white',
+    },
+  });
+};
 </script>
