@@ -1,12 +1,22 @@
-import {prisma} from "~/server/db/client";
+import { prisma } from "~/server/db/client";
+import { defineEventHandler, createError } from "h3";
 
 export default defineEventHandler(async (event) => {
-  let items = await prisma.products.findMany({
+  const id = event.context.params?.id;
+
+  if (typeof id !== "string") {
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Invalid or missing ID parameter",
+    });
+  }
+
+  const items = await prisma.products.findMany({
     take: 5,
     where: {
       title: {
-        contains: event.context.params.id,
-        mode: 'insensitive'
+        contains: id,
+        mode: 'insensitive',
       },
     },
   });

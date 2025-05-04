@@ -14,11 +14,11 @@ export default defineNuxtConfig({
     'pinia-plugin-persistedstate',
     '@nuxtjs/tailwindcss',
     '@nuxtjs/supabase',
+    '@unlok-co/nuxt-stripe',
   ],
   runtimeConfig: {
     public: {
       baseUrl: process.env.BASE_URL || 'http://localhost:3000',
-      stripePk: process.env.STRIPE_PK,
     },
   },
   app: {
@@ -30,6 +30,17 @@ export default defineNuxtConfig({
         },
       ],
     },
+  },
+
+  stripe :{
+    server: {
+      key: process.env.STRIPE_SECRET_KEY,
+      options: {}
+    },
+    client: {
+      key: process.env.STRIPE_PUBLIC_KEY,
+      options: {}
+    }
   },
 
   supabase: {
