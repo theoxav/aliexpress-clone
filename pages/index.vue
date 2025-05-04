@@ -1,48 +1,53 @@
 <template>
   <div id="IndexPage" class="mt-4 max-w-[1200px] mx-auto px-2">
-    <div v-if="status === 'pending'" class="text-center py-10 text-gray-600">
-      Chargement des produits...
-    </div>
-
-    <div v-else-if="error" class="text-center py-10 text-red-500">
-      Une erreur est survenue lors du chargement des produits.
-    </div>
-
-    <div
-      v-else
-      class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
-    >
-      <div v-for="product in products" :key="product.id">
-        <ProductItem :product="product" />
+    <!-- Loading -->
+    <template v-if="status === 'pending'">
+      <div class="text-center py-10 text-gray-600">
+        Chargement des produits...
       </div>
-    </div>
+    </template>
+
+    <!-- Error -->
+    <template v-if="error">
+      <div class="text-center py-10 text-red-500">
+        {{ error }}
+      </div>
+    </template>
+
+    <template v-if="products && products.length > 0">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4"
+      >
+        <ProductItem
+          v-for="product in products"
+          :product="product"
+          :key="product.id"
+        />
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
 import ProductItem from '~/components/products/ProductItem.vue';
-import type { Product } from '~/types';
 import { useUserStore } from '~/stores/user';
-import {toast} from "vue-sonner";
+import { useProductsStore } from '~/stores/products';
+import { toast } from 'vue-sonner';
 
 const userStore = useUserStore();
+const productStore = useProductsStore();
 
 const {
-  data: productsData,
+  data: products,
   error,
   status,
-} = await useFetch<Product[]>('/api/products/get-all-products', {
-  key: 'products',
-  server: true,
-});
+} = await useAsyncData('products', () => productStore.fetchProducts());
 
-const products = computed(() => productsData.value ?? []);
-
-if(error.value) {
-  toast(status, {
+if (error.value) {
+  toast("Erreur lors de la récupération des produits", {
     style: {
       background: '#ef4444',
-      color: 'white',
+      color: '#fff',
     },
   });
 }

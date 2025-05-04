@@ -100,6 +100,7 @@ import { useUserStore } from '~/stores/user';
 import { useProductsStore } from '~/stores/products';
 import { useRoute } from 'vue-router';
 import { ref, computed, onBeforeMount } from 'vue';
+import {toast} from "vue-sonner";
 
 const userStore = useUserStore();
 const productsStore = useProductsStore();
@@ -112,9 +113,18 @@ const productId = Array.isArray(route.params.id)
   ? route.params.id[0]
   : route.params.id;
 
-const { data: product } = await useAsyncData(`product-${productId}`, () =>
+const { data: product, error } = await useAsyncData(`product-${productId}`, () =>
   productsStore.fetchProductById(productId)
 );
+
+if (error.value) {
+  toast("Erreur lors de la récupération du produit", {
+    style: {
+      background: '#ef4444',
+      color: '#fff',
+    },
+  });
+}
 
 if (product.value) {
   currentImage.value = product.value.url;
