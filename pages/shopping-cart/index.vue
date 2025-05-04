@@ -35,7 +35,7 @@
 
         <div id="Items" class="bg-white rounded-lg p-4 mt-4">
           <CartItem
-            v-for="product in products"
+            v-for="product in userStore.cart"
             :key="product.id"
             :product="product"
             :selectedArray="selectedArray"
@@ -112,28 +112,19 @@ const selectedRadioFunc = (e: Product): void => {
     : selectedArray.value.splice(index, 1);
 };
 
-const goToCheckout = (): void => {
-  const ids = selectedArray.value.map((item) => item.id);
-  userStore.checkout = userStore.cart
-    .filter((item) => ids.includes(item.id))
-    .map(toRaw);
-  navigateTo('/checkout');
-};
+const goToCheckout = () => {
+  let ids = []
+  userStore.checkout = []
 
-const products = ref<Product[]>([
-  {
-    id: 1,
-    title: 'Title 1',
-    description: 'This is a description',
-    url: 'https://picsum.photos/id/7/800/800',
-    price: 999,
-  },
-  {
-    id: 2,
-    title: 'Title 2',
-    description: 'This is a description',
-    url: 'https://picsum.photos/id/29/800/800',
-    price: 999,
-  },
-]);
+  selectedArray.value.forEach(item => ids.push(item.id))
+
+  let res = userStore.cart.filter((item) => {
+    return ids.indexOf(item.id) != -1
+  })
+
+  res.forEach(item => userStore.checkout.push(toRaw(item)))
+
+  return navigateTo('/checkout')
+}
+
 </script>

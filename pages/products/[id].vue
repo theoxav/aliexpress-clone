@@ -156,7 +156,6 @@ const priceComputed = computed(() => {
 const addToCart = (): void => {
   if (productsStore.currentProduct) {
     userStore.cart.push(productsStore.currentProduct);
-    alert('Product added to cart!');
   } else {
     console.error('Cannot add to cart: Product is null.');
   }

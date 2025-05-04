@@ -1,11 +1,11 @@
 <template>
-  <div id="CheckoutPage" class="">
+  <div id="CheckoutPage">
     <div class="md:flex gap-4 justify-between mx-auto w-full">
       <div class="md:w-[65%]">
         <div class="bg-white rounded-lg p-4">
           <div class="text-xl font-semibold mb-2">Shipping Address</div>
 
-          <div v-if="currentAddress">
+          <div v-if="currentAddress && currentAddress.data">
             <NuxtLink
               to="/address"
               class="flex items-center pb-2 text-blue-500 hover:text-red-400"
@@ -13,32 +13,34 @@
               <Icon name="mdi:plus" size="18" class="mr-2" />
               Update Address
             </NuxtLink>
+
             <div class="pt-2 border-t">
               <div class="underline pb-1">Delivery Address</div>
               <ul class="text-xs">
                 <li class="flex items-center gap-2">
                   <div>Contact name:</div>
-                  <div class="font-bold">{{ currentAddress.contactName }}</div>
+                  <div class="font-bold">{{ currentAddress.data.name }}</div>
                 </li>
                 <li class="flex items-center gap-2">
                   <div>Address:</div>
-                  <div class="font-bold">{{ currentAddress.address }}</div>
+                  <div class="font-bold">{{ currentAddress.data.address }}</div>
                 </li>
                 <li class="flex items-center gap-2">
                   <div>Zip Code:</div>
-                  <div class="font-bold">{{ currentAddress.zipCode }}</div>
+                  <div class="font-bold">{{ currentAddress.data.zipcode }}</div>
                 </li>
                 <li class="flex items-center gap-2">
                   <div>City:</div>
-                  <div class="font-bold">{{ currentAddress.city }}</div>
+                  <div class="font-bold">{{ currentAddress.data.city }}</div>
                 </li>
                 <li class="flex items-center gap-2">
                   <div>Country:</div>
-                  <div class="font-bold">{{ currentAddress.country }}</div>
+                  <div class="font-bold">{{ currentAddress.data.country }}</div>
                 </li>
               </ul>
             </div>
           </div>
+
           <NuxtLink
             v-else
             to="/address"
@@ -48,22 +50,26 @@
             Add New Address
           </NuxtLink>
         </div>
+
         <div id="Items" class="bg-white rounded-lg p-4 mt-4">
-          <div v-for="product in userStore.checkout" :key="product.id">
+          <div v-for="product in userStore.checkout">
             <CheckoutItem :product="product" />
           </div>
         </div>
       </div>
-      <div class="md:hidden block my-4" />
 
+      <div class="md:hidden block my-4" />
       <div class="md:w-[35%]">
         <div id="PlaceOrder" class="bg-white rounded-lg p-4">
           <div class="text-2xl font-extrabold mb-2">Summary</div>
+
           <div class="flex items-center justify-between my-4">
-            <div>Total Shipping</div>
-            <div>Free</div>
+            <div class="">Total Shipping</div>
+            <div class="">Free</div>
           </div>
+
           <div class="border-t" />
+
           <div class="flex items-center justify-between my-4">
             <div class="font-semibold">Total</div>
             <div class="text-2xl font-semibold">
@@ -76,11 +82,13 @@
               class="border border-gray-500 p-2 rounded-sm"
               id="card-element"
             />
+
             <p
               id="card-error"
               role="alert"
               class="text-red-700 text-center font-semibold"
             />
+
             <button
               :disabled="isProcessing"
               type="submit"
@@ -92,22 +100,18 @@
             </button>
           </form>
         </div>
+
         <div class="bg-white rounded-lg p-4 mt-4">
           <div class="text-lg font-semibold mb-2 mt-2">AliExpress</div>
-          <p class="my-2">
-            AliExpress keeps your information and payement safe
-          </p>
+          <p class="my-2">AliExpress keeps your information and payment safe</p>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useUserStore } from '~/stores/user';
-import { ref } from 'vue';
-import type { Address, Product } from '~/types';
-
 const userStore = useUserStore();
 const user = useSupabaseUser();
 const route = useRoute();
@@ -118,7 +122,7 @@ let card = null;
 let form = null;
 let total = ref(0);
 let clientSecret = null;
-let currentAddress = ref<Address | null>();
+let currentAddress = ref(null);
 let isProcessing = ref(false);
 
 onBeforeMount(async () => {
@@ -127,7 +131,6 @@ onBeforeMount(async () => {
   }
 
   total.value = 0.0;
-
   if (user.value) {
     currentAddress.value = await useFetch(
       `/api/address/get-address-by-user/${user.value.id}`
@@ -138,14 +141,14 @@ onBeforeMount(async () => {
 
 watchEffect(() => {
   if (route.fullPath == '/checkout' && !user.value) {
-    return navigateTo('/auth/login');
+    return navigateTo('/auth')
   }
-});
+})
 
-onMounted(() => {
+onMounted(async () => {
   isProcessing.value = true;
 
-  userStore.checkout.forEach((item: Product) => {
+  userStore.checkout.forEach((item) => {
     total.value += item.price;
   });
 });
@@ -159,9 +162,17 @@ watch(
   }
 );
 
-const stripeInit = async () => {};
+const stripeInit = async () => {
+};
 
-const pay = async () => {};
-const createOrder = async (stripeId: String) => {};
-const showError = (errorMsgText) => {};
+const pay = async () => {
+
+};
+
+const createOrder = async (stripeId) => {
+
+};
+
+const showError = (errorMsgText) => {
+};
 </script>
